@@ -7,8 +7,12 @@ def main():
     root.geometry("450x450")
     entries = create_sudoku_grid(root)
 
+    board = generate_sudoku()
+    fill_sudoku(entries, board)
+
     check_button = tk.Button(root, text="ตรวจสอบ", command=lambda: check_sudoku(entries))
     check_button.grid(row=9, column=0, columnspan=9)
+
     root.mainloop()
 
 def create_sudoku_grid(root):
@@ -71,6 +75,11 @@ def generate_sudoku():
             board[i][j] = nums[(i * base + i // base + j) % (base * base)]
 
     return board
+
+def fill_sudoku(entries, board):
+    for i in range(9):
+        for j in range(9):
+            entries[i][j].insert(0, str(board[i][j]))
 
 if __name__ == "__main__":
     main()
