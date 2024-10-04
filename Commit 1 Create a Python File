@@ -5,6 +5,9 @@ def main():
     root.title("Sudoku Game")
     root.geometry("450x450")
     entries = create_sudoku_grid(root)
+
+    check_button = tk.Button(root, text="ตรวจสอบ", command=lambda: check_sudoku(entries))
+    check_button.grid(row=9, column=0, columnspan=9)
     root.mainloop()
 
 def create_sudoku_grid(root):
@@ -38,6 +41,23 @@ def check_valid_sudoku(board):
 def check_unique(nums):
     nums = [num for num in nums if num != 0]
     return len(nums) == len(set(nums))
+
+def check_sudoku(entries):
+    board = []
+    for row in entries:
+        current_row = []
+        for entry in row:
+            value = entry.get()
+            if value.isdigit():
+                current_row.append(int(value))
+            else:
+                current_row.append(0)
+        board.append(current_row)
+
+    if check_valid_sudoku(board):
+        print("Sudoku is valid!")
+    else:
+        print("Sudoku is invalid!")
 
 if __name__ == "__main__":
     main()
