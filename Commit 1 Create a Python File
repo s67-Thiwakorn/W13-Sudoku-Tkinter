@@ -4,7 +4,19 @@ def main():
     root = tk.Tk()
     root.title("Sudoku Game")
     root.geometry("450x450")
+    entries = create_sudoku_grid(root)
     root.mainloop()
+
+def create_sudoku_grid(root):
+    entries = []
+    for row in range(9):
+        row_entries = []
+        for col in range(9):
+            e = tk.Entry(root, width=2, justify='center', font=('Arial', 18))
+            e.grid(row=row, column=col, padx=5, pady=5)
+            row_entries.append(e)
+        entries.append(row_entries)
+    return entries
 
 if __name__ == "__main__":
     main()
