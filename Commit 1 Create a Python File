@@ -18,5 +18,26 @@ def create_sudoku_grid(root):
         entries.append(row_entries)
     return entries
 
+def check_valid_sudoku(board):
+    for row in board:
+        if not check_unique(row):
+            return False
+    for col in range(9):
+        if not check_unique([board[row][col] for row in range(9)]):
+            return False
+    for box_row in range(0, 9, 3):
+        for box_col in range(0, 9, 3):
+            box = []
+            for i in range(3):
+                for j in range(3):
+                    box.append(board[box_row + i][box_col + j])
+            if not check_unique(box):
+                return False
+    return True
+
+def check_unique(nums):
+    nums = [num for num in nums if num != 0]
+    return len(nums) == len(set(nums))
+
 if __name__ == "__main__":
     main()
