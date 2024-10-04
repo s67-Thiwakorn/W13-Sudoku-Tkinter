@@ -11,8 +11,14 @@ def main():
     board = generate_sudoku()
     fill_sudoku(entries, board)
 
+    save_button = tk.Button(root, text="เซฟเกม", command=lambda: save_game(entries, 'sudoku_save.txt'))
+    save_button.grid(row=9, column=0)
+
+    load_button = tk.Button(root, text="โหลดเกม", command=lambda: load_game(entries, 'sudoku_save.txt'))
+    load_button.grid(row=9, column=1)
+
     check_button = tk.Button(root, text="ตรวจสอบ", command=lambda: check_sudoku(entries))
-    check_button.grid(row=9, column=0, columnspan=9)
+    check_button.grid(row=9, column=2)
 
     root.mainloop()
 
@@ -91,6 +97,15 @@ def save_game(entries, filename):
             for entry in row:
                 current_row.append(entry.get() if entry.get().isdigit() else '0')
             file.write(' '.join(current_row) + '\n')
+
+def load_game(entries, filename):
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            for i, line in enumerate(file):
+                values = line.strip().split()
+                for j, value in enumerate(values):
+                    entries[i][j].delete(0, tk.END)
+                    entries[i][j].insert(0, value if value != '0' else '')
 
 if __name__ == "__main__":
     main()
