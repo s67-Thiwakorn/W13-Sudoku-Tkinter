@@ -20,6 +20,7 @@ def main():
     check_button = tk.Button(root, text="ตรวจสอบ", command=lambda: check_sudoku(entries))
     check_button.grid(row=9, column=2)
 
+    create_menu(root)
     root.mainloop()
 
 def create_sudoku_grid(root):
@@ -106,6 +107,23 @@ def load_game(entries, filename):
                 for j, value in enumerate(values):
                     entries[i][j].delete(0, tk.END)
                     entries[i][j].insert(0, value if value != '0' else '')
+
+def create_menu(root):
+    menu_window = tk.Toplevel(root)
+    menu_window.title("เลือกระดับความยาก")
+    menu_window.geometry("250x150")
+
+    tk.Label(menu_window, text="เลือกระดับความยาก:").pack()
+
+    difficulties = ['ง่าย', 'ปานกลาง', 'ยาก']
+    for difficulty in difficulties:
+        button = tk.Button(menu_window, text=difficulty, command=lambda d=difficulty: start_game(d, root))
+        button.pack(pady=5)
+
+def start_game(difficulty, root):
+    board = generate_sudoku(difficulty)
+    fill_sudoku(entries, board)
+    root.destroy()
 
 if __name__ == "__main__":
     main()
