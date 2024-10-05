@@ -116,6 +116,18 @@ def load_game(entries, username):
         return False
     return True
 
+def check_save_game():
+    username = simpledialog.askstring("ชื่อผู้ใช้", "กรุณากรอกชื่อผู้ใช้:")
+    if username:
+        if load_game(entries, username):
+            return username
+        else:
+            messagebox.showinfo("ไม่เจอเซฟเกม", "คุณไม่มีเซฟเกมนี้")
+            return None
+    else:
+        messagebox.showinfo("ไม่เจอเซฟเกม", "คุณไม่มีเซฟเกมนี้")
+        return None
+        
 def create_menu(root):
     menu_window = tk.Toplevel(root)
     menu_window.title("เลือกระดับความยาก")
@@ -134,16 +146,17 @@ def start_game(difficulty, root):
     root.destroy()
 
 def main():
+    global entries, root
     root = tk.Tk()
-    root.title("Sudoku Game")
-    root.geometry("450x450")
+    root.title("Sudoku")
+
     entries = create_sudoku_grid(root)
 
-    board = generate_sudoku()
-    fill_sudoku(entries, board)
-
-    load_button = tk.Button(root, text="โหลดเกม", command=lambda: load_game(entries, 'sudoku_save.txt'))
-    load_button.grid(row=9, column=1)
+    username = check_save_game()
+    if username:
+        load_game(entries, username)
+    else:
+        create_menu()
 
     check_button = tk.Button(root, text="ตรวจสอบ", command=lambda: check_sudoku(entries))
     check_button.grid(row=9, column=2)
@@ -151,7 +164,6 @@ def main():
     save_button = tk.Button(root, text="เซฟเกม", command=lambda: save_game(entries, simpledialog.askstring("ชื่อผู้ใช้", "กรุณากรอกชื่อผู้ใช้:")))
     save_button.grid(row=1, column=8, sticky="e", padx=10)
 
-    create_menu(root)
     root.mainloop()
 
 if __name__ == "__main__":
