@@ -24,14 +24,26 @@ def main():
     root.mainloop()
 
 def create_sudoku_grid(root):
+    canvas = tk.Canvas(root, width=450, height=450)
+    canvas.grid(row=0, column=0, columnspan=9)
+
+    canvas.create_line(0, 0, 450, 0, width=5)
+    canvas.create_line(0, 0, 0, 450, width=5)
+
+    for i in range(1, 9):
+        line_width = 3 if i % 3 == 0 else 1
+        canvas.create_line(50 * i, 0, 50 * i, 450, width=line_width)
+        canvas.create_line(0, 50 * i, 450, 50 * i, width=line_width)
+
     entries = []
     for row in range(9):
         row_entries = []
         for col in range(9):
             e = tk.Entry(root, width=2, justify='center', font=('Arial', 18))
-            e.grid(row=row, column=col, padx=5, pady=5)
+            e.place(x=50 * col + 5, y=50 * row + 5, width=40, height=40)
             row_entries.append(e)
         entries.append(row_entries)
+    
     return entries
 
 def check_valid_sudoku(board):
