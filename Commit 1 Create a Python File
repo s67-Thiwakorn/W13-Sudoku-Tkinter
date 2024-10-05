@@ -73,7 +73,8 @@ def create_sudoku_grid(root):
     for row in range(9):
         row_entries = []
         for col in range(9):
-            e = tk.Entry(root, width=2, justify='center', font=('Arial', 18))
+            validate_cmd = root.register(lambda value: value == "" or value.isdigit() and 1 <= int(value) <= 9)
+            e = tk.Entry(root, width=2, justify='center', font=('Arial', 18), validate='key', validatecommand=(validate_cmd, '%P'))
             e.place(x=50 * col + 5, y=50 * row + 5, width=40, height=40)
             row_entries.append(e)
         entries.append(row_entries)
