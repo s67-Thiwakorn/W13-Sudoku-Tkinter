@@ -3,29 +3,6 @@ from tkinter import messagebox, simpledialog
 import random
 import os
 
-def create_sudoku_grid(root):
-    canvas = tk.Canvas(root, width=450, height=450)
-    canvas.grid(row=0, column=0, columnspan=9)
-
-    canvas.create_line(0, 0, 450, 0, width=5)
-    canvas.create_line(0, 0, 0, 450, width=5)
-
-    for i in range(1, 9):
-        line_width = 3 if i % 3 == 0 else 1
-        canvas.create_line(50 * i, 0, 50 * i, 450, width=line_width)
-        canvas.create_line(0, 50 * i, 450, 50 * i, width=line_width)
-
-    entries = []
-    for row in range(9):
-        row_entries = []
-        for col in range(9):
-            e = tk.Entry(root, width=2, justify='center', font=('Arial', 18))
-            e.place(x=50 * col + 5, y=50 * row + 5, width=40, height=40)
-            row_entries.append(e)
-        entries.append(row_entries)
-    
-    return entries
-
 def check_valid_sudoku(board):
     for row in board:
         if not check_unique(row):
@@ -46,23 +23,6 @@ def check_valid_sudoku(board):
 def check_unique(nums):
     nums = [num for num in nums if num != 0]
     return len(nums) == len(set(nums))
-
-def check_sudoku(entries):
-    board = []
-    for row in entries:
-        current_row = []
-        for entry in row:
-            value = entry.get()
-            if value.isdigit():
-                current_row.append(int(value))
-            else:
-                current_row.append(0)
-        board.append(current_row)
-
-    if check_valid_sudoku(board):
-        print("Sudoku is valid!")
-    else:
-        print("Sudoku is invalid!")
 
 def generate_sudoku(difficulty):
     if difficulty == 'ง่าย':
@@ -97,12 +57,55 @@ def generate_sudoku(difficulty):
     
     return board
 
+def create_sudoku_grid(root):
+    canvas = tk.Canvas(root, width=450, height=450)
+    canvas.grid(row=0, column=0, columnspan=9)
+
+    canvas.create_line(0, 0, 450, 0, width=5)
+    canvas.create_line(0, 0, 0, 450, width=5)
+
+    for i in range(1, 9):
+        line_width = 3 if i % 3 == 0 else 1
+        canvas.create_line(50 * i, 0, 50 * i, 450, width=line_width)
+        canvas.create_line(0, 50 * i, 450, 50 * i, width=line_width)
+
+    entries = []
+    for row in range(9):
+        row_entries = []
+        for col in range(9):
+            e = tk.Entry(root, width=2, justify='center', font=('Arial', 18))
+            e.place(x=50 * col + 5, y=50 * row + 5, width=40, height=40)
+            row_entries.append(e)
+        entries.append(row_entries)
+    
+    return entries
+
 def fill_sudoku(entries, board):
     for i in range(9):
         for j in range(9):
             if board[i][j] != 0:
                 entries[i][j].insert(0, str(board[i][j]))
                 entries[i][j].config(state='readonly')
+
+def check_sudoku(entries):
+    board = []
+    for row in entries:
+        current_row = []
+        for entry in row:
+            value = entry.get()
+            if value.isdigit():
+                current_row.append(int(value))
+            else:
+                current_row.append(0)
+        board.append(current_row)
+
+    if check_valid_sudoku(board):
+        if all(cell != '' for row in board for cell in row):
+            messagebox.showinfo("ผลลัพธ์", "คุณชนะเกมนี้แล้ว!")
+        else:
+            messagebox.showinfo("ผลลัพธ์", "คุณใส่เลขถูกต้อง แต่ยังไม่ครบ!")
+    else:
+        messagebox.showerror("ข้อผิดพลาด", "มีข้อผิดพลาดใน Sudoku!")
 
 def save_game(entries, username):
     if os.path.exists(f"{username}.txt"):
@@ -150,7 +153,13 @@ def check_save_game():
     else:
         messagebox.showinfo("ไม่เจอเซฟเกม", "คุณไม่มีเซฟเกมนี้")
         return None
-        
+
+def start_game(difficulty):
+    global menu_window
+    menu_window.destroy()
+    board = generate_sudoku(difficulty)
+    fill_sudoku(entries, board)
+
 def create_menu():
     global menu_window
     menu_window = tk.Toplevel(root)
@@ -169,12 +178,6 @@ def create_menu():
     for difficulty in difficulties:
         button = tk.Button(menu_window, text=difficulty, command=lambda d=difficulty: (start_game(d)))
         button.pack(pady=5)
-
-def start_game(difficulty):
-    global menu_window
-    menu_window.destroy()
-    board = generate_sudoku(difficulty)
-    fill_sudoku(entries, board)
 
 def main():
     global entries, root
