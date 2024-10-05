@@ -79,7 +79,9 @@ def generate_sudoku():
 def fill_sudoku(entries, board):
     for i in range(9):
         for j in range(9):
-            entries[i][j].insert(0, str(board[i][j]))
+            if board[i][j] != 0:
+                entries[i][j].insert(0, str(board[i][j]))
+                entries[i][j].config(state='readonly')
 
 def save_game(entries, username):
     if os.path.exists(f"{username}.txt"):
@@ -140,10 +142,11 @@ def create_menu(root):
         button = tk.Button(menu_window, text=difficulty, command=lambda d=difficulty: start_game(d, root))
         button.pack(pady=5)
 
-def start_game(difficulty, root):
+def start_game(difficulty):
+    global menu_window
+    menu_window.destroy()
     board = generate_sudoku(difficulty)
     fill_sudoku(entries, board)
-    root.destroy()
 
 def main():
     global entries, root
