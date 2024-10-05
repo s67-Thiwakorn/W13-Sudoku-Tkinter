@@ -1,27 +1,7 @@
 import tkinter as tk
+from tkinter import messagebox, simpledialog
 import random
 import os
-
-def main():
-    root = tk.Tk()
-    root.title("Sudoku Game")
-    root.geometry("450x450")
-    entries = create_sudoku_grid(root)
-
-    board = generate_sudoku()
-    fill_sudoku(entries, board)
-
-    save_button = tk.Button(root, text="เซฟเกม", command=lambda: save_game(entries, 'sudoku_save.txt'))
-    save_button.grid(row=9, column=0)
-
-    load_button = tk.Button(root, text="โหลดเกม", command=lambda: load_game(entries, 'sudoku_save.txt'))
-    load_button.grid(row=9, column=1)
-
-    check_button = tk.Button(root, text="ตรวจสอบ", command=lambda: check_sudoku(entries))
-    check_button.grid(row=9, column=2)
-
-    create_menu(root)
-    root.mainloop()
 
 def create_sudoku_grid(root):
     canvas = tk.Canvas(root, width=450, height=450)
@@ -101,24 +81,40 @@ def fill_sudoku(entries, board):
         for j in range(9):
             entries[i][j].insert(0, str(board[i][j]))
 
-import os
+def save_game(entries, username):
+    if os.path.exists(f"{username}.txt"):
+        messagebox.showwarning("ชื่อผู้ใช้ซ้ำ", "มีการใช้ชื่อนี้แล้ว กรุณาเปลี่ยนชื่อ")
+        return
 
-def save_game(entries, filename):
-    with open(filename, 'w') as file:
-        for row in entries:
-            current_row = []
-            for entry in row:
-                current_row.append(entry.get() if entry.get().isdigit() else '0')
-            file.write(' '.join(current_row) + '\n')
+    board = []
+    for row in entries:
+        current_row = []
+        for entry in row:
+            value = entry.get()
+            current_row.append(value if value.isdigit() else '0')
+        board.append(current_row)
+    
+    with open(f"{username}.txt", "w") as file:
+        for row in board:
+            file.write(" ".join(row) + "\n")
+    
+    messagebox.showinfo("เซฟเกม", "เกมของคุณถูกบันทึกเรียบร้อยแล้ว!")
 
-def load_game(entries, filename):
-    if os.path.exists(filename):
-        with open(filename, 'r') as file:
-            for i, line in enumerate(file):
-                values = line.strip().split()
-                for j, value in enumerate(values):
+def load_game(entries, username):
+    if os.path.exists(f"{username}.txt"):
+        with open(f"{username}.txt", "r") as file:
+            board = [line.strip().split() for line in file]
+            for i in range(9):
+                for j in range(9):
                     entries[i][j].delete(0, tk.END)
-                    entries[i][j].insert(0, value if value != '0' else '')
+                    if board[i][j] == '0':
+                        entries[i][j].insert(0, '')
+                    else:
+                        entries[i][j].insert(0, board[i][j])
+                        entries[i][j].config(state='readonly')
+    else:
+        return False
+    return True
 
 def create_menu(root):
     menu_window = tk.Toplevel(root)
@@ -136,6 +132,27 @@ def start_game(difficulty, root):
     board = generate_sudoku(difficulty)
     fill_sudoku(entries, board)
     root.destroy()
+
+def main():
+    root = tk.Tk()
+    root.title("Sudoku Game")
+    root.geometry("450x450")
+    entries = create_sudoku_grid(root)
+
+    board = generate_sudoku()
+    fill_sudoku(entries, board)
+
+    load_button = tk.Button(root, text="โหลดเกม", command=lambda: load_game(entries, 'sudoku_save.txt'))
+    load_button.grid(row=9, column=1)
+
+    check_button = tk.Button(root, text="ตรวจสอบ", command=lambda: check_sudoku(entries))
+    check_button.grid(row=9, column=2)
+
+    save_button = tk.Button(root, text="เซฟเกม", command=lambda: save_game(entries, simpledialog.askstring("ชื่อผู้ใช้", "กรุณากรอกชื่อผู้ใช้:")))
+    save_button.grid(row=1, column=8, sticky="e", padx=10)
+
+    create_menu(root)
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
