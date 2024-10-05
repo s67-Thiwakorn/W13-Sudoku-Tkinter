@@ -130,16 +130,23 @@ def check_save_game():
         messagebox.showinfo("ไม่เจอเซฟเกม", "คุณไม่มีเซฟเกมนี้")
         return None
         
-def create_menu(root):
+def create_menu():
+    global menu_window
     menu_window = tk.Toplevel(root)
     menu_window.title("เลือกระดับความยาก")
     menu_window.geometry("250x150")
+    menu_window.resizable(False, False)
+    menu_window.overrideredirect(1)
+
+    menu_window_x = root.winfo_x() + (root.winfo_width() // 2) - 125
+    menu_window_y = root.winfo_y() + (root.winfo_height() // 2) - 75
+    menu_window.geometry(f"+{menu_window_x}+{menu_window_y}")
 
     tk.Label(menu_window, text="เลือกระดับความยาก:").pack()
 
     difficulties = ['ง่าย', 'ปานกลาง', 'ยาก']
     for difficulty in difficulties:
-        button = tk.Button(menu_window, text=difficulty, command=lambda d=difficulty: start_game(d, root))
+        button = tk.Button(menu_window, text=difficulty, command=lambda d=difficulty: (start_game(d)))
         button.pack(pady=5)
 
 def start_game(difficulty):
@@ -162,7 +169,7 @@ def main():
         create_menu()
 
     check_button = tk.Button(root, text="ตรวจสอบ", command=lambda: check_sudoku(entries))
-    check_button.grid(row=9, column=2)
+    check_button.grid(row=1, column=0, sticky="w", padx=10)
 
     save_button = tk.Button(root, text="เซฟเกม", command=lambda: save_game(entries, simpledialog.askstring("ชื่อผู้ใช้", "กรุณากรอกชื่อผู้ใช้:")))
     save_button.grid(row=1, column=8, sticky="e", padx=10)
