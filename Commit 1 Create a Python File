@@ -64,16 +64,37 @@ def check_sudoku(entries):
     else:
         print("Sudoku is invalid!")
 
-def generate_sudoku():
+def generate_sudoku(difficulty):
+    if difficulty == 'ง่าย':
+        empties = 36
+    elif difficulty == 'ปานกลาง':
+        empties = 45
+    elif difficulty == 'ยาก':
+        empties = 54
+    else:
+        empties = 45
+
     base = 3
     side = base * base
-    nums = random.sample(range(1, base * base + 1), base * base)
-    board = [[0 for _ in range(9)] for _ in range(9)]
+    def pattern(r, c): return (base*(r%base)+r//base+c)%side
+    def shuffle(s): return random.sample(s, len(s))
 
-    for i in range(9):
-        for j in range(9):
-            board[i][j] = nums[(i * base + i // base + j) % (base * base)]
+    r_base = range(base)
+    rows  = [ g*base + r for g in shuffle(r_base) for r in shuffle(r_base) ]
+    cols  = [ g*base + c for g in shuffle(r_base) for c in shuffle(r_base) ]
+    nums  = shuffle(range(1, base*base+1))
 
+    board = [ [nums[pattern(r, c)] for c in cols] for r in rows ]
+    
+    squares = side * side
+    for _ in range(empties):
+        i = random.randrange(side)
+        j = random.randrange(side)
+        while board[i][j] == 0:
+            i = random.randrange(side)
+            j = random.randrange(side)
+        board[i][j] = 0
+    
     return board
 
 def fill_sudoku(entries, board):
